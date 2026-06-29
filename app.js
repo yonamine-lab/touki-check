@@ -235,10 +235,8 @@ async function runCheck() {
   if (!apiKey) { showToast('設定画面でGemini APIキーを入力してください', true); return; }
   if (uploadedFiles.length === 0) { showToast('書類をアップロードしてください', true); return; }
   
-  // エラー回避：要素が存在しない場合は空文字やデフォルト値をセットする
-  const typeEl = document.getElementById('check-type');
-  const type = typeEl ? typeEl.value : '';
-  if (!type) { showToast('申請種別を選択してください', true); return; }
+  // 申請種別は書類から100%自動判別させる
+  const type = '未指定（添付された申請書等の記載から、登記の目的をAIが自動判別してください）';
 
   const personEl = document.getElementById('check-person');
   const person = personEl ? personEl.value.trim() : '未設定';
@@ -281,7 +279,7 @@ ${LAW_KNOWLEDGE}
 ${casesText}
 
 # 申請種別
-${type}
+添付された申請書等の画像から「登記の目的（または申請の目的）」をAI自身で最優先で読み取り、何の登記申請（例：売買による所有権移転、抵当権設定など）であるかを自動判別した上で、その種別に応じた厳格な審査を行ってください。
 
 # 必須チェック項目および厳格判定基準
 
