@@ -1,3 +1,4 @@
+const GAS_URL = 'https://script.google.com/macros/s/https://script.google.com/a/macros/ecrioffice.com/s/AKfycbzdNspeOCOKy_-NSVYhMPDce3U-WVj3LEldJrNZ3725YAq0u0943LIpmZD8tvCKG3_xCQ/exec/exec';
 // ============================================================
 // 登記チェックシステム app.js
 // ============================================================
