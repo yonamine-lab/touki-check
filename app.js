@@ -33,11 +33,11 @@ document.addEventListener('DOMContentLoaded', async () => {
       showToast('スプレッドシートから補正事例を読み込みました');
     }
 
-    // 担当者の自動セット処理
+    // 担当者の自動セット処理（tryの中に正しく配置しました）
     const savedSettings = localStorage.getItem('touki_settings');
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
-      if (settings.user) { // 保存されているキー名に合わせて判定
+      if (settings.user) {
         const personEl = document.getElementById('check-person');
         if (personEl) {
           personEl.value = settings.user;
