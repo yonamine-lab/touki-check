@@ -485,8 +485,7 @@ async function addCase() {
     try {
       await fetch(GAS_URL, {
         method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify({ action: 'add', password: GAS_PASSWORD, ...newCase })
       });
       showToast('補正事例を登録しました（スプレッドシートに保存済み）');
