@@ -1,6 +1,3 @@
-const GAS_URL = 'https://script.google.com/a/macros/ecrioffice.com/s/AKfycbzdNspeOCOKy_-NSVYhMPDce3U-WVj3LEldJrNZ3725YAq0u0943LIpmZD8tvCKG3_xCQ/exec';
-const GAS_PASSWORD = 'bmtt7v4d';
-
 // ============================================================
 // 登記チェックシステム app.js
 // ============================================================
@@ -21,24 +18,23 @@ document.addEventListener('DOMContentLoaded', async () => {
   setupNav();
   setupUpload();
 
-  // スプレッドシートから補正事例を読み込む
-  if (GAS_URL) {
-    try {
-　　　 const res = await fetch(GAS_URL + '?password=' + GAS_PASSWORD + '&action=list', {
-  　　　method: 'GET',
-  　　　redirect: 'follow'
-});
-      const data = await res.json();
-      if (data.success && data.cases && data.cases.length > 0) {
-        cases = data.cases;
-        localStorage.setItem('touki_cases', JSON.stringify(cases));
-        renderCasesTable();
-        updateStats();
-        showToast('スプレッドシートから補正事例を読み込みました');
-      }
-    } catch(e) {
-      console.log('スプレッドシート読み込みエラー:', e);
+  // スプレッドシートから補正事例を安全に読み込む（中継API経由）
+  try {
+    const res = await fetch('/api/cases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'list' })
+    });
+    const data = await res.json();
+    if (data.success && data.cases && data.cases.length > 0) {
+      cases = data.cases;
+      localStorage.setItem('touki_cases', JSON.stringify(cases));
+      renderCasesTable();
+      updateStats();
+      showToast('スプレッドシートから補正事例を読み込みました');
     }
+  } catch(e) {
+    console.log('スプレッドシート読み込みエラー:', e);
   }
 });
 
@@ -138,7 +134,7 @@ function removeFile(index) {
   if (uploadedFiles.length === 0) {
     const zone = document.getElementById('upload-zone');
     zone.querySelector('.upload-text').textContent = 'クリックまたはドラッグ＆ドロップ';
-    zone.querySelector('.upload-sub').textContent = 'PDF・JPG・PNG対応　複数ファイル可';
+    zone.querySelector('.upload-sub').textContent = 'PDF・JPG・PNG対応 複数ファイル可';
   }
 }
 
@@ -151,7 +147,7 @@ function clearCheck() {
   const zone = document.getElementById('upload-zone');
   zone.classList.remove('has-files');
   zone.querySelector('.upload-text').textContent = 'クリックまたはドラッグ＆ドロップ';
-  zone.querySelector('.upload-sub').textContent = 'PDF・JPG・PNG対応　複数ファイル可';
+  zone.querySelector('.upload-sub').textContent = 'PDF・JPG・PNG対応 複数ファイル可';
 }
 
 // --- ファイルをbase64に変換 ---
@@ -343,7 +339,7 @@ function renderResult(r, type, person) {
   let html = `
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
       <div style="font-size:14px;color:var(--color-text-secondary)">
-        ${type}　担当：${person}　${new Date().toLocaleString('ja-JP')}
+        ${type} 担当：${person} ${new Date().toLocaleString('ja-JP')}
       </div>
       <div style="display:flex;gap:8px">
         <button class="btn btn-ghost" style="font-size:13px" onclick="saveAsCase()">補正事例として保存</button>
@@ -483,26 +479,31 @@ async function addCase() {
   cases.unshift(newCase);
   localStorage.setItem('touki_cases', JSON.stringify(cases));
 
-  // スプレッドシートに保存
-  if (GAS_URL) {
-    try {
-      const params = new URLSearchParams({
+  // 中継APIを経由してスプレッドシートに安全に保存
+  try {
+    const res = await fetch('/api/cases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
         action: 'add',
-        password: GAS_PASSWORD,
         id: String(newCase.id),
         date: newCase.date,
         type: newCase.type,
         content: newCase.content,
         correction: newCase.correction,
         person: newCase.person
-      });
-      await fetch(GAS_URL + '?' + params.toString());
+      })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
       showToast('補正事例を登録しました（スプレッドシートに保存済み）');
-    } catch(e) {
-      showToast('補正事例を登録しました（スプレッドシート保存失敗）', true);
+    } else {
+      showToast('補正事例を登録しましたが、スプレッドシート保存に失敗しました: ' + (data.error || '不明なエラー'), true);
     }
-  } else {
-    showToast('補正事例を登録しました');
+  } catch(e) {
+    console.error(e);
+    showToast('補正事例を登録しましたが、スプレッドシートとの通信に失敗しました', true);
   }
 
   hideAddCase();
