@@ -24,7 +24,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   // スプレッドシートから補正事例を読み込む
   if (GAS_URL) {
     try {
-      const res = await fetch(GAS_URL + '?action=list&password=' + GAS_PASSWORD);
+　　　 const res = await fetch(GAS_URL + '?password=' + GAS_PASSWORD + '&action=list', {
+  　　　method: 'GET',
+  　　　redirect: 'follow'
+});
       const data = await res.json();
       if (data.success && data.cases && data.cases.length > 0) {
         cases = data.cases;
