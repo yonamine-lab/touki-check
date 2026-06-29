@@ -62,7 +62,10 @@
         <div class="card">
           <div class="form-group" style="position: relative;">
             <label>担当者</label>
-            <input type="text" id="check-person" class="form-control" placeholder="担当者名を選択" autocomplete="off" style="cursor: pointer;" readonly>
+            <div style="position: relative;">
+              <input type="text" id="check-person" class="form-control" placeholder="担当者名を選択" autocomplete="off" style="cursor: default; background-color: #fff; padding-right: 30px;" readonly>
+              <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); pointer-events: none; font-size: 10px; color: #888;">▼</span>
+            </div>
             <div id="person-dropdown" class="custom-dropdown" style="display: none;">
               <div class="dropdown-item">砂川</div>
               <div class="dropdown-item">新崎</div>
