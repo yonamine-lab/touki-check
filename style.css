@@ -497,3 +497,8 @@ textarea { resize: vertical; }
 .doc-card.ok { border-color: #9AE6B4; background: var(--color-success-light); }
 .doc-card.ng { border-color: #FEB2B2; background: var(--color-danger-light); }
 .doc-card.warn { border-color: #FAF089; background: var(--color-warn-light); }
+
+.dropdown-item {
+  /* ...（他の設定があるかもしれません）... */
+  cursor: pointer; /* ▼ マウスを乗せたら指マーク（ポインター）にする ▼ */
+}
