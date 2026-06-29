@@ -33,18 +33,17 @@ document.addEventListener('DOMContentLoaded', async () => {
       showToast('スプレッドシートから補正事例を読み込みました');
     }
 
-    // ▼ ここから追記：メイン画面の担当者プルダウンに「⚙️ 設定」の名前を自動セット
+    // 担当者の自動セット処理
     const savedSettings = localStorage.getItem('touki_settings');
     if (savedSettings) {
       const settings = JSON.parse(savedSettings);
-      if (settings.person) {
+      if (settings.user) { // 保存されているキー名に合わせて判定
         const personEl = document.getElementById('check-person');
         if (personEl) {
-          personEl.value = settings.person;
+          personEl.value = settings.user;
         }
       }
     }
-    // ▲ ここまで追記
 
   } catch(e) {
     console.log('スプレッドシート読み込みエラー:', e);
