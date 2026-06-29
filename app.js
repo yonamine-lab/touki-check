@@ -309,6 +309,7 @@ ${axes.join('\n')}
 }
 law_issuesはdoLaw=${doLaw}、doc_issuesはdoDoc=${doDoc}の場合のみ含める。
 case_matchesはdoCase=${doCase}かつsimilarity>=50の場合のみ含める。
+※注意: 必ず「# 過去の補正事例」として提供された事例（【事例1】など）と類似している場合のみ出力すること。「LAW_KNOWLEDGE（よくある補正原因）」との類似には絶対に使用しないこと。
 問題がない軸は空配列にする。`;
 
     showLoading('AIが書類を解析中...');
