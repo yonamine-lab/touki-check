@@ -11,13 +11,30 @@ let settings = JSON.parse(localStorage.getItem('touki_settings') || '{}');
 let lastResult = null;
 
 // --- 初期化 ---
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   loadSettings();
   updateStats();
   renderCasesTable();
   renderHistoryTable();
   setupNav();
   setupUpload();
+  
+  // スプレッドシートから補正事例を読み込む
+  if (typeof GAS_URL !== 'undefined' && GAS_URL) {
+    try {
+      const res = await fetch(GAS_URL);
+      const data = await res.json();
+      if (data.success && data.cases.length > 0) {
+        cases = data.cases;
+        localStorage.setItem('touki_cases', JSON.stringify(cases));
+        renderCasesTable();
+        updateStats();
+        showToast('スプレッドシートから補正事例を読み込みました');
+      }
+    } catch(e) {
+      console.log('スプレッドシート読み込みエラー:', e);
+    }
+  }
 });
 
 // --- ナビゲーション ---
