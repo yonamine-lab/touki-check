@@ -1,6 +1,4 @@
-// api/cases.js (Vercel Serverless Function)
 export default async function handler(req, res) {
-  // 安全のため、POSTメソッド以外は弾く
   if (req.method !== 'POST') {
     return res.status(405).json({ success: false, error: 'Method Not Allowed' });
   }
@@ -8,22 +6,16 @@ export default async function handler(req, res) {
   try {
     const { action, ...data } = req.body;
     
-    // ステップ1で設定した環境変数を安全に取得（ブラウザからは見えません）
-    const GAS_URL = process.env.GAS_URL;
-    const GAS_PASSWORD = process.env.GAS_PASSWORD;
+    // 💡 環境変数を使わず、ここに直接指定します（裏側なので誰にも見られません）
+    const GAS_URL = 'https://script.google.com/a/macros/ecrioffice.com/s/AKfycbzdNspeOCOKy_-NSVYhMPDce3U-WVj3LEldJrNZ3725YAq0u0943LIpmZD8tvCKG3_xCQ/exec';
+    const GAS_PASSWORD = 'bmtt7v4d';
 
-    if (!GAS_URL || !GAS_PASSWORD) {
-      return res.status(500).json({ success: false, error: 'サーバーの環境変数が設定されていません' });
-    }
-
-    // GASに渡すデータをまとめる
     const payload = {
       password: GAS_PASSWORD,
       action: action,
       ...data
     };
 
-    // VercelサーバーからGASへ裏側でPOST送信（CORSエラーは起きません）
     const gasResponse = await fetch(GAS_URL, {
       method: 'POST',
       headers: {
@@ -38,4 +30,4 @@ export default async function handler(req, res) {
   } catch (error) {
     return res.status(500).json({ success: false, error: error.message });
   }
-}  
+}
