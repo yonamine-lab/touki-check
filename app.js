@@ -752,3 +752,50 @@ function hideLoading() { const el = document.getElementById('loading-overlay'); 
 function showToast(msg, isError = false) { 
   const el = document.createElement('div'); el.className = 'toast'; el.style.background = isError ? 'var(--color-danger)' : 'var(--color-text)'; el.textContent = msg; document.body.appendChild(el); setTimeout(() => el.remove(), 3000);
 }
+
+// --- カスタムドロップダウンの制御 ---
+document.addEventListener('DOMContentLoaded', () => {
+  // ① 担当者のドロップダウン制御
+  const personInput = document.getElementById('check-person');
+  const personDropdown = document.getElementById('person-dropdown');
+
+  if (personInput && personDropdown) {
+    personInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+      personDropdown.style.display = personDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    personDropdown.addEventListener('click', (e) => {
+      if (e.target.classList.contains('dropdown-item')) {
+        personInput.value = e.target.textContent;
+        personDropdown.style.display = 'none';
+      }
+    });
+  }
+
+  // ② 管轄法務局のドロップダウン制御（今回追加分）
+  const jurInput = document.getElementById('case-jurisdiction');
+  const jurDropdown = document.getElementById('jurisdiction-dropdown');
+
+  if (jurInput && jurDropdown) {
+    jurInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+      jurDropdown.style.display = jurDropdown.style.display === 'block' ? 'none' : 'block';
+    });
+    jurDropdown.addEventListener('click', (e) => {
+      if (e.target.classList.contains('dropdown-item')) {
+        jurInput.value = e.target.textContent;
+        jurDropdown.style.display = 'none';
+      }
+    });
+  }
+
+  // 画面のどこかをクリックしたらすべてのドロップダウンを閉じる
+  document.addEventListener('click', (e) => {
+    if (personInput && personDropdown && e.target !== personInput && e.target !== personDropdown) {
+      personDropdown.style.display = 'none';
+    }
+    if (jurInput && jurDropdown && e.target !== jurInput && e.target !== jurDropdown) {
+      jurDropdown.style.display = 'none';
+    }
+  });
+});
