@@ -467,23 +467,41 @@ function saveAsCase() {
 function showAddCase() { document.getElementById('add-case-form').style.display = 'block'; }
 function hideAddCase() { document.getElementById('add-case-form').style.display = 'none'; }
 
-function addCase() {
+async function addCase() {
   const type = document.getElementById('case-type').value.trim();
   const content = document.getElementById('case-content').value.trim();
   const correction = document.getElementById('case-correction').value.trim();
   const person = document.getElementById('case-person').value.trim();
   if (!content || !correction) { showToast('申請書内容と補正内容は必須です', true); return; }
-  cases.unshift({
+  
+  const newCase = {
     id: Date.now(),
     date: new Date().toLocaleDateString('ja-JP'),
     type, content, correction, person
-  });
+  };
+  
+  cases.unshift(newCase);
   localStorage.setItem('touki_cases', JSON.stringify(cases));
+  
+  // スプレッドシートに保存
+  if (typeof GAS_URL !== 'undefined' && GAS_URL) {
+    try {
+      await fetch(GAS_URL, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'add', ...newCase })
+      });
+      showToast('補正事例を登録しました（スプレッドシートに保存済み）');
+    } catch(e) {
+      showToast('補正事例を登録しました（スプレッドシート保存失敗）', true);
+    }
+  } else {
+    showToast('補正事例を登録しました');
+  }
+  
   hideAddCase();
   ['case-type','case-content','case-correction','case-person'].forEach(id => document.getElementById(id).value = '');
   renderCasesTable();
   updateStats();
-  showToast('補正事例を登録しました');
 }
 
 function deleteCase(id) {
