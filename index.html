@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>登記チェックシステム</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+    <!-- サイドバー -->
+    <aside class="sidebar">
+      <div class="logo">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+        <span>登記チェック</span>
+      </div>
+      <nav>
+        <div class="nav-section">メイン</div>
+        <button class="nav-item active" data-page="check">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          書類チェック
+        </button>
+        <button class="nav-item" data-page="result">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          チェック結果
+        </button>
+        <div class="nav-section">データ管理</div>
+        <button class="nav-item" data-page="cases">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          補正事例DB
+        </button>
+        <button class="nav-item" data-page="history">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          チェック履歴
+        </button>
+        <div class="nav-section">設定</div>
+        <button class="nav-item" data-page="settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+          設定
+        </button>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-info">
+          <div class="user-avatar" id="user-avatar">田</div>
+          <span id="user-name-display">未設定</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- メインコンテンツ -->
+    <main class="main">
+
+      <!-- 書類チェック画面 -->
+      <div id="page-check" class="page active">
+        <div class="page-header">
+          <h1>書類チェック</h1>
+          <p class="page-desc">PDFまたは画像をアップロードしてAIチェックを実行します</p>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-num" id="stat-cases">0</div>
+            <div class="stat-label">補正事例数</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-checked">0</div>
+            <div class="stat-label">チェック済み</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-num" id="stat-alerts">0</div>
+            <div class="stat-label">今月のアラート</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="form-row">
+            <div class="form-group">
+              <label>申請種別</label>
+              <select id="check-type">
+                <option value="">選択してください</option>
+                <option>所有権移転（売買）</option>
+                <option>所有権移転（相続）</option>
+                <option>所有権移転（贈与）</option>
+                <option>抵当権設定</option>
+                <option>抵当権抹消</option>
+                <option>所有権保存</option>
+                <option>住所変更・氏名変更</option>
+                <option>その他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>担当者</label>
+              <input type="text" id="check-person" placeholder="氏名を入力">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>書類をアップロード（PDF・画像、複数可）</label>
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" id="file-input" multiple accept=".pdf,image/*" style="display:none">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--color-muted)"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <p class="upload-text">クリックまたはドラッグ＆ドロップ</p>
+              <p class="upload-sub">PDF・JPG・PNG対応　複数ファイル可</p>
+            </div>
+            <div id="file-list" class="file-list"></div>
+          </div>
+
+          <div class="form-group">
+            <label>チェック軸</label>
+            <div class="checkbox-row">
+              <label class="checkbox-label">
+                <input type="checkbox" id="chk-law" checked>
+                <span class="badge badge-law">法令チェック</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="chk-doc" checked>
+                <span class="badge badge-doc">添付書類チェック</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="chk-case" checked>
+                <span class="badge badge-case">補正事例チェック</span>
+              </label>
+              <label class="checkbox-label">
+                <input type="checkbox" id="chk-anon">
+                <span class="badge badge-anon">匿名化して送信</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn btn-primary" id="run-check-btn" onclick="runCheck()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+              AIチェック実行
+            </button>
+            <button class="btn btn-ghost" onclick="clearCheck()">クリア</button>
+          </div>
+        </div>
+
+        <div id="inline-result"></div>
+      </div>
+
+      <!-- チェック結果画面 -->
+      <div id="page-result" class="page">
+        <div class="page-header">
+          <h1>チェック結果</h1>
+        </div>
+        <div id="result-content">
+          <div class="empty-state">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--color-muted)"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <p>まだチェック結果がありません</p>
+            <p style="font-size:13px;color:var(--color-muted)">書類チェック画面でAIチェックを実行してください</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 補正事例DB画面 -->
+      <div id="page-cases" class="page">
+        <div class="page-header">
+          <h1>補正事例DB</h1>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="showAddCase()">＋ 新規登録</button>
+            <button class="btn btn-ghost" onclick="exportCSV()">CSVエクスポート</button>
+            <label class="btn btn-ghost" style="cursor:pointer">
+              CSVインポート
+              <input type="file" accept=".csv" style="display:none" onchange="importCSV(event)">
+            </label>
+          </div>
+        </div>
+
+        <div id="add-case-form" class="card" style="display:none">
+          <h3 style="margin-bottom:14px;font-size:15px">新規補正事例を登録</h3>
+          <div class="form-row">
+            <div class="form-group">
+              <label>申請種別</label>
+              <input type="text" id="case-type" placeholder="例：所有権移転（売買）">
+            </div>
+            <div class="form-group">
+              <label>担当者</label>
+              <input type="text" id="case-person" placeholder="氏名">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>申請書の内容（問題のあった箇所を含む）</label>
+            <textarea id="case-content" rows="3" placeholder="申請書の主な記載内容"></textarea>
+          </div>
+          <div class="form-group">
+            <label>補正内容（どんな問題があったか）</label>
+            <textarea id="case-correction" rows="3" placeholder="例：登記原因の日付が空欄。令和○年○月○日の記載が必要。"></textarea>
+          </div>
+          <div class="btn-row">
+            <button class="btn btn-primary" onclick="addCase()">登録する</button>
+            <button class="btn btn-ghost" onclick="hideAddCase()">キャンセル</button>
+          </div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>日付</th>
+                <th>種別</th>
+                <th>補正内容</th>
+                <th>担当</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="cases-table-body">
+              <tr><td colspan="5" class="empty-cell">まだ補正事例が登録されていません</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="hint-text">💡 CSVエクスポートして共有Googleドライブに保存すると、チームで共有できます</p>
+      </div>
+
+      <!-- チェック履歴画面 -->
+      <div id="page-history" class="page">
+        <div class="page-header">
+          <h1>チェック履歴</h1>
+          <button class="btn btn-ghost" onclick="clearHistory()">履歴を削除</button>
+        </div>
+        <div class="card" style="padding:0;overflow:hidden">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>日時</th>
+                <th>種別</th>
+                <th>書類数</th>
+                <th>担当</th>
+                <th>結果</th>
+              </tr>
+            </thead>
+            <tbody id="history-table-body">
+              <tr><td colspan="5" class="empty-cell">チェック履歴がありません</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- 設定画面 -->
+      <div id="page-settings" class="page">
+        <div class="page-header">
+          <h1>設定</h1>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px">API設定</h3>
+          <div class="form-group">
+            <label>Gemini APIキー</label>
+            <input type="password" id="setting-apikey" placeholder="AIza...">
+            <p class="field-hint">Google AI Studioで取得したAPIキーを入力してください</p>
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">保存する</button>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px">事務所・ユーザー設定</h3>
+          <div class="form-group">
+            <label>事務所名</label>
+            <input type="text" id="setting-office" placeholder="例：○○司法書士事務所">
+          </div>
+          <div class="form-group">
+            <label>担当者名（自分の名前）</label>
+            <input type="text" id="setting-user" placeholder="例：田中">
+          </div>
+          <button class="btn btn-primary" onclick="saveSettings()">保存する</button>
+        </div>
+        <div class="card">
+          <h3 style="margin-bottom:14px;font-size:15px">データ管理</h3>
+          <p style="font-size:13px;color:var(--color-muted);margin-bottom:12px">補正事例・履歴はこのブラウザに保存されています。CSVエクスポートで共有Googleドライブにバックアップしてください。</p>
+          <div class="btn-row">
+            <button class="btn btn-ghost" onclick="exportCSV()">補正事例をCSVエクスポート</button>
+            <button class="btn btn-danger" onclick="clearAllData()">全データを削除</button>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
