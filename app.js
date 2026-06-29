@@ -344,7 +344,12 @@ case_matchesはdoCase=${doCase}かつsimilarity>=50の場合のみ含める。
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts }] })
+      body: JSON.stringify({
+        contents: [{ parts }],
+        generationConfig: { 
+          temperature: 0.0 // ★追加：AIの創造性をゼロ（完全固定）にする
+        }
+      })
     });
 
     const data = await res.json();
