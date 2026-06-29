@@ -353,7 +353,7 @@ case_matchesはdoCase=${doCase}かつsimilarity>=50の場合のみ含める。
 
     showLoading('AIが書類を解析中...');
     const parts = [{ text: prompt }, ...fileParts];
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+    const res = await fetch(``https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
