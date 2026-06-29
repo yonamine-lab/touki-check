@@ -135,7 +135,10 @@ async function runCheck() {
   const type = document.getElementById('check-type').value;
   if (!type) { showToast('申請種別を選択してください', true); return; }
 
-  const person = document.getElementById('check-person').value.trim() || '未設定';
+  // ▼ エラー回避のための安全な書き方に変更
+  const personEl = document.getElementById('check-person');
+  const person = personEl ? personEl.value.trim() : '未設定';
+
   const doLaw = document.getElementById('chk-law').checked;
   const doDoc = document.getElementById('chk-doc').checked;
   const doCase = document.getElementById('chk-case').checked;
