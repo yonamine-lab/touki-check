@@ -151,9 +151,18 @@
             </div>
           </div>
           <div class="form-row">
-            <div class="form-group">
+            <div class="form-group" style="position: relative;">
               <label>管轄法務局</label>
-              <input type="text" id="case-jurisdiction" placeholder="○○法務局 ○○出張所">
+              <input type="text" id="case-jurisdiction" class="form-control" placeholder="管轄法務局を選択" autocomplete="off" style="cursor: pointer;" readonly>
+              <div id="jurisdiction-dropdown" class="custom-dropdown" style="display: none;">
+                <div class="dropdown-item">那覇地方法務局 本局</div>
+                <div class="dropdown-item">那覇地方法務局 宜野湾出張所</div>
+                <div class="dropdown-item">那覇地方法務局 沖縄支局</div>
+                <div class="dropdown-item">那覇地方法務局 名護支局</div>
+                <div class="dropdown-item">那覇地方法務局 宮古島支局</div>
+                <div class="dropdown-item">那覇地方法務局 石垣支局</div>
+                <div class="dropdown-item">県外</div>
+                </div>
             </div>
             <div class="form-group">
               <label>登記官</label>
