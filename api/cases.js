@@ -7,7 +7,7 @@ export default async function handler(req, res) {
     const { action, ...data } = req.body;
     
     // 💡 環境変数を使わず、ここに直接指定します（裏側なので誰にも見られません）
-    const GAS_URL = 'https://script.google.com/a/macros/ecrioffice.com/s/AKfycbzdNspeOCOKy_-NSVYhMPDce3U-WVj3LEldJrNZ3725YAq0u0943LIpmZD8tvCKG3_xCQ/exec';
+    const GAS_URL = 'https://script.google.com/macros/s/AKfycbyosoxcYvkgiyczXh8eNosiZTFuIWET3FljEdxIoYmllCDD7VCtealnfMh2fX8w2NU_xQ/exec';
     const GAS_PASSWORD = 'bmtt7v4d';
 
     const payload = {
