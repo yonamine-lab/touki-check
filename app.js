@@ -633,4 +633,105 @@ function addHistory(type, person, fileCount, riskLevel) {
 }
 
 // --- 履歴表示（テーブル項目を4項目に合わせる安全設計） ---
-function render
+function renderHistoryTable() {
+  const tbody = document.getElementById('history-table-body');
+  if(!tbody) return;
+  if (history.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="4" class="empty-cell">チェック履歴がありません</td></tr>';
+    return;
+  }
+  tbody.innerHTML = history.map(h => {
+    const badge = h.riskLevel === 'high'
+      ? '<span class="badge badge-danger">要注意</span>'
+      : h.riskLevel === 'medium'
+      ? '<span class="badge badge-warn">注意</span>'
+      : '<span class="badge badge-ok">問題なし</span>';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:12px">${h.date}</td>
+      <td>${h.fileCount}件</td>
+      <td>${h.person}</td>
+      <td>${badge}</td>
+    </tr>`;
+  }).join('');
+}
+
+function clearHistory() { 
+  if (!confirm('チェック履歴をすべて削除しますか？')) return;
+  history = [];
+  localStorage.setItem('touki_history', JSON.stringify(history));
+  renderHistoryTable();
+  updateStats();
+  showToast('履歴を削除しました');
+}
+
+// --- CSV ---
+function exportCSV() {
+  if (cases.length === 0) { showToast('補正事例がありません', true); return; }
+  const header = ['ID', '申請日', '受付番号', '管轄法務局', '登記官', '申請種別', '補正内容'];
+  const rows = cases.map(c => [c.id, c.date, c.receipt_number, c.jurisdiction, c.registrar, c.type, c.correction].map(v => `"${(v||'').replace(/"/g,'""')}"`));
+  const csv = '\uFEFF' + [header, ...rows].map(r => r.join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href = url; a.download = `補正事例.csv`; a.click();
+}
+
+function importCSV(event) {
+  const file = event.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const text = e.target.result.replace(/^\uFEFF/, '');
+    const lines = text.split('\n').slice(1).filter(l => l.trim());
+    let count = 0;
+    lines.forEach(line => {
+      const cols = line.match(/("([^"]|"")*"|[^,]*)(,|$)/g)?.map(v => v.replace(/,$/,'').replace(/^"|"$/g,'').replace(/""/g,'"')) || [];
+      if (cols.length >= 6) {
+        cases.push({ id: cols[0] || Date.now() + count, date: cols[1], receipt_number: cols[2], jurisdiction: cols[3], registrar: cols[4], type: cols[5], correction: cols[6] });
+        count++;
+      }
+    });
+    localStorage.setItem('touki_cases', JSON.stringify(cases));
+    renderCasesTable(); updateStats(); showToast(`${count}件インポートしました`);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+// --- UI・補助機能 ---
+function updateStats() {
+  const c = document.getElementById('stat-cases'); if(c) c.textContent = cases.length;
+  const h = document.getElementById('stat-checked'); if(h) h.textContent = history.length;
+}
+
+function clearAllData() { 
+  if (!confirm('全データ（補正事例・履歴・設定）を削除しますか？この操作は取り消せません。')) return;
+  localStorage.clear(); 
+  location.reload(); 
+}
+
+// --- 印刷 ---
+function printResult() { window.print(); }
+
+function showLoading(msg) { 
+  let el = document.getElementById('loading-overlay');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'loading-overlay';
+    el.className = 'loading-overlay';
+    document.body.appendChild(el);
+  }
+  el.innerHTML = `<div class="spinner"></div><div>${msg}</div>`;
+  el.style.display = 'flex';
+}
+
+function hideLoading() { 
+  const el = document.getElementById('loading-overlay');
+  if (el) el.style.display = 'none';
+}
+
+function showToast(msg, isError = false) { 
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.style.background = isError ? 'var(--color-danger)' : 'var(--color-text)';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
