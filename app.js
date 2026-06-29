@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // スプレッドシートから補正事例を読み込む
   if (GAS_URL) {
     try {
-      const res = await fetch(GAS_URL + '?password=' + GAS_PASSWORD);
+      const res = await fetch(GAS_URL + '?action=list&password=' + GAS_PASSWORD);
       const data = await res.json();
       if (data.success && data.cases && data.cases.length > 0) {
         cases = data.cases;
@@ -483,11 +483,17 @@ async function addCase() {
   // スプレッドシートに保存
   if (GAS_URL) {
     try {
-      await fetch(GAS_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify({ action: 'add', password: GAS_PASSWORD, ...newCase })
+      const params = new URLSearchParams({
+        action: 'add',
+        password: GAS_PASSWORD,
+        id: String(newCase.id),
+        date: newCase.date,
+        type: newCase.type,
+        content: newCase.content,
+        correction: newCase.correction,
+        person: newCase.person
       });
+      await fetch(GAS_URL + '?' + params.toString());
       showToast('補正事例を登録しました（スプレッドシートに保存済み）');
     } catch(e) {
       showToast('補正事例を登録しました（スプレッドシート保存失敗）', true);
