@@ -38,10 +38,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (savedSettings) {
       const parsed = JSON.parse(savedSettings);
       if (parsed.user) {
-        const personEl = document.getElementById('check-person');
-        if (personEl) {
-          personEl.value = parsed.user;
-        }
+        forceSetPerson(parsed.user);
       }
     }
 
@@ -49,6 +46,26 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('スプレッドシート読み込みエラー:', e);
   }
 });
+
+// プルダウン形式でも名前を強制的に追加してセットする安全な関数
+function forceSetPerson(val) {
+  const personEl = document.getElementById('check-person');
+  if (!personEl || !val) return;
+  
+  if (personEl.tagName === 'SELECT') {
+    let exists = false;
+    for (let i = 0; i < personEl.options.length; i++) {
+      if (personEl.options[i].value === val) { exists = true; break; }
+    }
+    if (!exists) {
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      personEl.appendChild(opt);
+    }
+  }
+  personEl.value = val;
+}
 
 // --- ナビゲーション ---
 function setupNav() {
@@ -78,8 +95,9 @@ function loadSettings() {
     if(nameDisplay) nameDisplay.textContent = settings.user;
     const avatar = document.getElementById('user-avatar');
     if(avatar) avatar.textContent = settings.user.charAt(0);
-    const checkPerson = document.getElementById('check-person');
-    if(checkPerson) checkPerson.value = settings.user;
+    
+    // ここを改良
+    forceSetPerson(settings.user);
   }
 }
 
@@ -100,8 +118,9 @@ function saveSettings() {
     if(nameDisplay) nameDisplay.textContent = settings.user;
     const avatar = document.getElementById('user-avatar');
     if(avatar) avatar.textContent = settings.user.charAt(0);
-    const checkPerson = document.getElementById('check-person');
-    if(checkPerson) checkPerson.value = settings.user;
+    
+    // ここを改良
+    forceSetPerson(settings.user);
   }
   showToast('設定を保存しました');
 }
