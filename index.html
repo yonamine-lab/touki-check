@@ -8,8 +8,8 @@
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <link rel="icon" type="image/png" sizes="512x512" href="icon-512.png">
-　<link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
-　<link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" sizes="512x512" href="icon-512.png">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1a3a5c">
 </head>
 <body>
@@ -53,8 +53,6 @@
     </aside>
 
     <main class="main">
-
-      <!-- 書類チェック画面 -->
       <div id="page-check" class="page active">
         <div class="page-header">
           <h1>書類チェック</h1>
@@ -62,30 +60,28 @@
         </div>
 
         <div class="card">
-          <div class="form-group">
- 　　　　　 <label>担当者</label>
-　　　　　　  <input type="text" id="check-person" list="person-list" class="form-control" placeholder="担当者名を入力または選択" onclick="this.value=''" autocomplete="off">
-  
-　　　　　  <datalist id="person-list">
- 　　　　   <option value="砂川"></option>
-  　　　　  <option value="新崎"></option>
-  　　　　  <option value="新里"></option>
-  　　　　  <option value="與那嶺"></option>
-         　 <option value="比嘉"></option>
-  　　　　  <option value="佐久川"></option>
-  　　　　  <option value="知花"></option>
-      　　  <option value="荻堂"></option>
-   　　　　  <option value="一桂"></option>
-  　　　  </datalist>
-　　　　　</div>
-
+          <div class="form-group" style="position: relative;">
+            <label>担当者</label>
+            <input type="text" id="check-person" class="form-control" placeholder="担当者名を選択" autocomplete="off" style="cursor: pointer;" readonly>
+            <div id="person-dropdown" class="custom-dropdown" style="display: none;">
+              <div class="dropdown-item">砂川</div>
+              <div class="dropdown-item">新崎</div>
+              <div class="dropdown-item">新里</div>
+              <div class="dropdown-item">與那嶺</div>
+              <div class="dropdown-item">比嘉</div>
+              <div class="dropdown-item">佐久川</div>
+              <div class="dropdown-item">知花</div>
+              <div class="dropdown-item">荻堂</div>
+              <div class="dropdown-item">一桂</div>
+            </div>
+          </div>
           <div class="form-group">
             <label>書類をアップロード（PDF・画像、複数可）</label>
             <div class="upload-zone" id="upload-zone">
               <input type="file" id="file-input" multiple accept=".pdf,image/*" style="display:none">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="color:var(--color-muted)"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               <p class="upload-text">クリックまたはドラッグ＆ドロップ</p>
-              <p class="upload-sub">PDF・JPG・PNG対応　複数ファイル可</p>
+              <p class="upload-sub">PDF・JPG・PNG対応 複数ファイル可</p>
             </div>
             <div id="file-list" class="file-list"></div>
           </div>
@@ -120,7 +116,6 @@
         <div id="inline-result"></div>
       </div>
 
-      <!-- チェック結果画面 -->
       <div id="page-result" class="page">
         <div class="page-header">
           <h1>チェック結果</h1>
@@ -134,7 +129,6 @@
         </div>
       </div>
 
-      <!-- 補正事例画面 -->
       <div id="page-cases" class="page">
         <div class="page-header">
           <h1>補正事例</h1>
@@ -201,7 +195,6 @@
         <p class="hint-text">💡 CSVエクスポートして共有Googleドライブに保存すると、チームで共有できます</p>
       </div>
 
-      <!-- チェック履歴画面 -->
       <div id="page-history" class="page">
         <div class="page-header">
           <h1>チェック履歴</h1>
@@ -225,7 +218,6 @@
         </div>
       </div>
 
-      <!-- 設定画面 -->
       <div id="page-settings" class="page">
         <div class="page-header">
           <h1>設定</h1>
