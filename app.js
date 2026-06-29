@@ -1,4 +1,6 @@
-const GAS_URL = 'https://script.google.com/macros/s/https://script.google.com/a/macros/ecrioffice.com/s/AKfycbzdNspeOCOKy_-NSVYhMPDce3U-WVj3LEldJrNZ3725YAq0u0943LIpmZD8tvCKG3_xCQ/exec/exec';
+const GAS_URL = 'https://script.google.com/a/macros/ecrioffice.com/s/AKfycbzdNspeOCOKy_-NSVYhMPDce3U-WVj3LEldJrNZ3725YAq0u0943LIpmZD8tvCKG3_xCQ/exec';
+const GAS_PASSWORD = 'bmtt7v4d';
+
 // ============================================================
 // 登記チェックシステム app.js
 // ============================================================
@@ -18,13 +20,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   renderHistoryTable();
   setupNav();
   setupUpload();
-  
+
   // スプレッドシートから補正事例を読み込む
-  if (typeof GAS_URL !== 'undefined' && GAS_URL) {
+  if (GAS_URL) {
     try {
-      const res = await fetch(GAS_URL);
+      const res = await fetch(GAS_URL + '?password=' + GAS_PASSWORD);
       const data = await res.json();
-      if (data.success && data.cases.length > 0) {
+      if (data.success && data.cases && data.cases.length > 0) {
         cases = data.cases;
         localStorage.setItem('touki_cases', JSON.stringify(cases));
         renderCasesTable();
@@ -159,7 +161,7 @@ function fileToBase64(file) {
   });
 }
 
-// --- 法律知識（プロンプトに埋め込む） ---
+// --- 法律知識 ---
 const LAW_KNOWLEDGE = `
 【不動産登記法・規則の主要チェックポイント】
 
@@ -216,19 +218,10 @@ const LAW_KNOWLEDGE = `
 // --- AIチェック実行 ---
 async function runCheck() {
   const apiKey = settings.apikey;
-  if (!apiKey) {
-    showToast('設定画面でGemini APIキーを入力してください', true);
-    return;
-  }
-  if (uploadedFiles.length === 0) {
-    showToast('書類をアップロードしてください', true);
-    return;
-  }
+  if (!apiKey) { showToast('設定画面でGemini APIキーを入力してください', true); return; }
+  if (uploadedFiles.length === 0) { showToast('書類をアップロードしてください', true); return; }
   const type = document.getElementById('check-type').value;
-  if (!type) {
-    showToast('申請種別を選択してください', true);
-    return;
-  }
+  if (!type) { showToast('申請種別を選択してください', true); return; }
 
   const person = document.getElementById('check-person').value.trim() || '未設定';
   const doLaw = document.getElementById('chk-law').checked;
@@ -239,14 +232,12 @@ async function runCheck() {
   showLoading('書類を読み取り中...');
 
   try {
-    // ファイルをbase64に変換
     const fileParts = await Promise.all(uploadedFiles.map(async f => {
       const b64 = await fileToBase64(f);
       const mimeType = f.type || 'application/pdf';
       return { inline_data: { mime_type: mimeType, data: b64 } };
     }));
 
-    // 補正事例テキスト
     const casesText = cases.length > 0
       ? cases.map((c, i) => `【事例${i+1}】種別:${c.type||'不明'}\n内容:${c.content}\n補正:${c.correction}`).join('\n\n')
       : '（まだ登録されていません）';
@@ -287,7 +278,7 @@ ${axes.join('\n')}
     {"severity": "high" または "medium", "filename": "関連ファイル名", "issue": "書類の問題点", "fix": "対応方法"}
   ],
   "cross_issues": [
-    {"severity": "high" または "medium", "issue": "書類間の整合性問題（日付不一致・氏名不一致など）", "fix": "修正方法"}
+    {"severity": "high" または "medium", "issue": "書類間の整合性問題", "fix": "修正方法"}
   ],
   "case_matches": [
     {"case_index": 事例番号, "similarity": 0-100, "point": "類似点", "risk": "リスク"}
@@ -321,14 +312,10 @@ case_matchesはdoCase=${doCase}かつsimilarity>=50の場合のみ含める。
     hideLoading();
     lastResult = { result, type, person, fileCount: uploadedFiles.length, date: new Date() };
 
-    // 履歴に追加
     addHistory(type, person, uploadedFiles.length, result.risk_level);
-
-    // 結果表示
     renderResult(result, type, person);
     updateStats();
 
-    // チェック結果ページへ切り替え
     document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     document.querySelector('[data-page="result"]').classList.add('active');
@@ -360,14 +347,12 @@ function renderResult(r, type, person) {
         <button class="btn btn-ghost" style="font-size:13px" onclick="printResult()">印刷</button>
       </div>
     </div>
-
     <div class="alert ${rc.cls}">
       <div class="alert-title ${rc.titleCls}">${rc.icon} ${rc.label}</div>
       <div style="font-size:13px">${r.overall || ''}</div>
     </div>
   `;
 
-  // 書類ごとの読み取り状況
   if (r.file_results && r.file_results.length > 0) {
     html += `<div class="section-label">書類ごとの読み取り状況</div>
     <div class="doc-grid">
@@ -383,7 +368,6 @@ function renderResult(r, type, person) {
     </div>`;
   }
 
-  // 法令チェック
   if (r.law_issues && r.law_issues.length > 0) {
     html += `<div class="section-label"><span class="badge badge-law">法令</span> 法令・記載事項チェック</div>
     <div class="card">
@@ -400,7 +384,6 @@ function renderResult(r, type, person) {
     </div>`;
   }
 
-  // 添付書類チェック
   if (r.doc_issues && r.doc_issues.length > 0) {
     html += `<div class="section-label"><span class="badge badge-doc">添付書類</span> 添付書類チェック</div>
     <div class="card">
@@ -416,7 +399,6 @@ function renderResult(r, type, person) {
     </div>`;
   }
 
-  // 書類間の整合性チェック
   if (r.cross_issues && r.cross_issues.length > 0) {
     html += `<div class="section-label"><span class="badge badge-case">整合性</span> 書類間の整合性チェック</div>
     <div class="card">
@@ -432,7 +414,6 @@ function renderResult(r, type, person) {
     </div>`;
   }
 
-  // 補正事例チェック
   if (r.case_matches && r.case_matches.length > 0) {
     html += `<div class="section-label"><span class="badge badge-case">補正事例</span> 類似補正事例</div>`;
     r.case_matches.forEach(m => {
@@ -454,7 +435,6 @@ function renderResult(r, type, person) {
     });
   }
 
-  // 問題なしポイント
   if (r.ok_points && r.ok_points.length > 0) {
     html += `<div class="section-label">問題なさそうな点</div>
     <div class="card">
@@ -477,7 +457,7 @@ function saveAsCase() {
   showAddCase();
   document.querySelector('[data-page="cases"]').click();
   document.getElementById('case-type').value = lastResult.type;
-  showToast('申請種別を入力して補正内容を追記してください');
+  showToast('補正内容を追記して登録してください');
 }
 
 // --- 補正事例DB ---
@@ -490,22 +470,24 @@ async function addCase() {
   const correction = document.getElementById('case-correction').value.trim();
   const person = document.getElementById('case-person').value.trim();
   if (!content || !correction) { showToast('申請書内容と補正内容は必須です', true); return; }
-  
+
   const newCase = {
     id: Date.now(),
     date: new Date().toLocaleDateString('ja-JP'),
     type, content, correction, person
   };
-  
+
   cases.unshift(newCase);
   localStorage.setItem('touki_cases', JSON.stringify(cases));
-  
+
   // スプレッドシートに保存
-  if (typeof GAS_URL !== 'undefined' && GAS_URL) {
+  if (GAS_URL) {
     try {
       await fetch(GAS_URL, {
         method: 'POST',
-        body: JSON.stringify({ action: 'add', ...newCase })
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'add', password: GAS_PASSWORD, ...newCase })
       });
       showToast('補正事例を登録しました（スプレッドシートに保存済み）');
     } catch(e) {
@@ -514,14 +496,14 @@ async function addCase() {
   } else {
     showToast('補正事例を登録しました');
   }
-  
+
   hideAddCase();
   ['case-type','case-content','case-correction','case-person'].forEach(id => document.getElementById(id).value = '');
   renderCasesTable();
   updateStats();
 }
 
-function deleteCase(id) {
+async function deleteCase(id) {
   if (!confirm('この事例を削除しますか？')) return;
   cases = cases.filter(c => c.id !== id);
   localStorage.setItem('touki_cases', JSON.stringify(cases));
@@ -540,7 +522,7 @@ function renderCasesTable() {
     <tr>
       <td style="white-space:nowrap">${c.date}</td>
       <td><span class="badge badge-case">${c.type || '不明'}</span></td>
-      <td>${c.correction.slice(0, 40)}${c.correction.length > 40 ? '…' : ''}</td>
+      <td>${c.correction ? c.correction.slice(0, 40) + (c.correction.length > 40 ? '…' : '') : ''}</td>
       <td>${c.person || '-'}</td>
       <td><button class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="deleteCase(${c.id})">削除</button></td>
     </tr>
