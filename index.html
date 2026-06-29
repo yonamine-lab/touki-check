@@ -65,9 +65,21 @@
 
         <div class="card">
           <div class="form-group">
-            <label>担当者</label>
-            <input type="text" id="check-person" placeholder="氏名を入力">
-          </div>
+ 　　　　　 <label>担当者</label>
+　　　　　　  <input type="text" id="check-person" list="person-list" class="form-control" placeholder="担当者名を入力または選択">
+  
+　　　　　  <datalist id="person-list">
+ 　　　　   <option value="砂川"></option>
+  　　　　  <option value="新崎"></option>
+  　　　　  <option value="新里"></option>
+  　　　　  <option value="與那嶺"></option>
+         　 <option value="比嘉"></option>
+  　　　　  <option value="佐久川"></option>
+  　　　　  <option value="知花"></option>
+      　　  <option value="荻堂"></option>
+   　　　　  <option value="一桂"></option>
+  　　　  </datalist>
+　　　　　</div>
 
           <div class="form-group">
             <label>書類をアップロード（PDF・画像、複数可）</label>
