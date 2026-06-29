@@ -180,44 +180,54 @@
           </div>
         </div>
 
-        <div id="add-case-form" class="card" style="display:none">
-          <h3 style="margin-bottom:14px;font-size:15px">新規補正事例を登録</h3>
-          <div class="form-row">
-            <div class="form-group">
-              <label>申請種別</label>
-              <input type="text" id="case-type" placeholder="例：所有権移転（売買）">
-            </div>
-            <div class="form-group">
-              <label>担当者</label>
-              <input type="text" id="case-person" placeholder="氏名">
-            </div>
-          </div>
-          <div class="form-group">
-            <label>申請書の内容（問題のあった箇所を含む）</label>
-            <textarea id="case-content" rows="3" placeholder="申請書の主な記載内容"></textarea>
-          </div>
-          <div class="form-group">
-            <label>補正内容（どんな問題があったか）</label>
-            <textarea id="case-correction" rows="3" placeholder="例：登記原因の日付が空欄。令和○年○月○日の記載が必要。"></textarea>
-          </div>
-          <div class="btn-row">
-            <button class="btn btn-primary" onclick="addCase()">登録する</button>
-            <button class="btn btn-ghost" onclick="hideAddCase()">キャンセル</button>
-          </div>
-        </div>
+       <div id="add-case-form" class="card" style="display:none; margin-bottom:20px;">
+  <h3 style="margin-top:0;">補正事例の新規登録</h3>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+    <div>
+      <label>申請日 <span style="color:red">*</span></label>
+      <input type="date" id="case-date" class="form-control">
+    </div>
+    <div>
+      <label>受付番号</label>
+      <input type="text" id="case-receipt" class="form-control" placeholder="第1234号">
+    </div>
+    <div>
+      <label>管轄法務局</label>
+      <input type="text" id="case-jurisdiction" class="form-control" placeholder="〇〇法務局 〇〇出張所">
+    </div>
+    <div>
+      <label>登記官</label>
+      <input type="text" id="case-registrar" class="form-control" placeholder="登記官の氏名">
+    </div>
+  </div>
+  <div style="margin-bottom:10px;">
+    <label>申請種別 <span style="color:red">*</span></label>
+    <input type="text" id="case-type" class="form-control" placeholder="例: 所有権移転（売買）">
+  </div>
+  <div style="margin-bottom:15px;">
+    <label>補正内容 <span style="color:red">*</span></label>
+    <textarea id="case-correction" class="form-control" rows="4" placeholder="具体的な補正指示・不備内容と、その対応策を記入してください"></textarea>
+  </div>
+  <div style="display:flex; gap:10px; justify-content:flex-end;">
+    <button class="btn btn-ghost" onclick="hideAddCase()">キャンセル</button>
+    <button class="btn" onclick="addCase()">登録する</button>
+  </div>
+</div>
 
         <div class="card" style="padding:0;overflow:hidden">
           <table class="data-table">
             <thead>
-              <tr>
-                <th>日付</th>
-                <th>種別</th>
-                <th>補正内容</th>
-                <th>担当</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="cases-table-body">
+ 　　　　　　 <tr>
+   　　　　　　 <th>申請日</th>
+   　　　　　　 <th>受付番号</th>
+    　　　　　　<th>管轄法務局</th>
+    　　　　　　<th>登記官</th>
+    　　　　　　<th>申請種別</th>
+    　　　　　　<th>補正内容</th>
+    　　　　　　<th>操作</th>
+  　　　　　</tr>
+　　　　　　</thead>
+　　　　　　<tbody id="cases-table-body">
               <tr><td colspan="5" class="empty-cell">まだ補正事例が登録されていません</td></tr>
             </tbody>
           </table>
