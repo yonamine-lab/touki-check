@@ -144,7 +144,7 @@ nav { padding: 12px 0; flex: 1; }
   padding: 32px;
   flex: 1;
   min-width: 0;
-  max-width: 860px;
+  max-width: 1200px;
   width: calc(100% - var(--sidebar-width));
 }
 
