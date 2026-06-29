@@ -512,13 +512,37 @@ async function addCase() {
   updateStats();
 }
 
+// --- 修正後の削除処理 ---
 async function deleteCase(id) {
   if (!confirm('この事例を削除しますか？')) return;
-  cases = cases.filter(c => c.id !== id);
+  
+  // 画面の見た目とブラウザの記憶から一旦削除
+  cases = cases.filter(c => String(c.id) !== String(id));
   localStorage.setItem('touki_cases', JSON.stringify(cases));
   renderCasesTable();
   updateStats();
-  showToast('削除しました');
+
+  // スプレッドシート（裏側）にも削除するようお願いする
+  try {
+    const res = await fetch('/api/cases', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'delete',
+        id: String(id) // どのIDを消すかを送る
+      })
+    });
+    const data = await res.json();
+    
+    if (data.success) {
+      showToast('削除しました');
+    } else {
+      showToast('スプレッドシートからの削除に失敗しました: ' + (data.error || '不明なエラー'), true);
+    }
+  } catch(e) {
+    console.error(e);
+    showToast('通信エラーでスプレッドシートから削除できませんでした', true);
+  }
 }
 
 function renderCasesTable() {
