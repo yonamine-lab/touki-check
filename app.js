@@ -799,3 +799,49 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+
+// ==========================================
+// 補正事例テーブルの描画と詳細ポップアップ機能
+// ==========================================
+function renderCasesTable() {
+  const tbody = document.getElementById('cases-table-body');
+  if(!tbody) return;
+  if (cases.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">まだ補正事例が登録されていません</td></tr>';
+    return;
+  }
+  // 行をクリックしたときに viewCaseDetail を呼び出す
+  tbody.innerHTML = cases.map(c => `
+    <tr onclick="viewCaseDetail(${c.id})" title="クリックして詳細を表示">
+      <td style="white-space:nowrap">${c.date || '-'}</td>
+      <td>${c.receipt_number || '-'}</td>
+      <td>${c.jurisdiction || '-'}</td>
+      <td>${c.registrar || '-'}</td>
+      <td><span class="badge badge-case">${c.type || '不明'}</span></td>
+      <td>${c.correction ? c.correction.slice(0, 40) + (c.correction.length > 40 ? '…' : '') : ''}</td>
+      <td><button class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="event.stopPropagation(); deleteCase(${c.id})">削除</button></td>
+    </tr>
+  `).join('');
+}
+
+function viewCaseDetail(caseId) {
+  const c = cases.find(item => item.id === caseId);
+  if (!c) {
+    showToast('事例データが見つかりません', true);
+    return;
+  }
+  document.getElementById('modal-case-date').textContent = c.date || '-';
+  document.getElementById('modal-case-receipt').textContent = c.receipt_number || '-';
+  document.getElementById('modal-case-jurisdiction').textContent = c.jurisdiction || '-';
+  document.getElementById('modal-case-registrar').textContent = c.registrar || '-';
+  document.getElementById('modal-case-type').textContent = c.type || '不明';
+  document.getElementById('modal-case-correction').textContent = c.correction || '';
+
+  const modal = document.getElementById('case-detail-modal');
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeCaseModal() {
+  const modal = document.getElementById('case-detail-modal');
+  if (modal) modal.style.display = 'none';
+}
