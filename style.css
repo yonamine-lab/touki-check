@@ -502,3 +502,90 @@ textarea { resize: vertical; }
   /* ...（他の設定があるかもしれません）... */
   cursor: pointer; /* ▼ マウスを乗せたら指マーク（ポインター）にする ▼ */
 }
+/* --- 補正事例詳細モーダルのデザイン --- */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal-card {
+  background: #fff;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+  overflow: hidden;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.modal-header {
+  padding: 14px 20px;
+  background: #1a3a5c;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.modal-body {
+  padding: 20px;
+  max-height: 75vh;
+  overflow-y: auto;
+}
+
+/* モーダル内の簡易テーブル */
+.detail-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.detail-table th, .detail-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: left;
+  font-size: 13px;
+}
+
+.detail-table th {
+  width: 90px;
+  color: #4a5568;
+  font-weight: 500;
+  background-color: #f8fafc;
+}
+
+/* 補正事例テーブルの行にマウスを乗せたときの設定 */
+.data-table tbody tr {
+  cursor: pointer; /* マウスを乗せたら指マークにする */
+}
+.data-table tbody tr:hover {
+  background-color: #f8fafc; /* ホバー時にうっすら背景色を変える */
+}
