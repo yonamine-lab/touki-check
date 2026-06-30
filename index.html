@@ -272,5 +272,23 @@
   </div>
 
   <script src="app.js"></script>
+  <div id="case-detail-modal" class="modal-overlay" style="display: none;" onclick="closeCaseModal()">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <h2>補正事例の詳細</h2>
+        <button class="modal-close" onclick="closeCaseModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <table class="detail-table">
+          <tr><th>申請日</th><td id="modal-case-date"></td></tr>
+          <tr><th>受付番号</th><td id="modal-case-receipt"></td></tr>
+          <tr><th>管轄法務局</th><td id="modal-case-jurisdiction"></td></tr>
+          <tr><th>登記官</th><td id="modal-case-registrar"></td></tr>
+          <tr><th>申請種別</th><td><span id="modal-case-type" class="badge badge-case"></span></td></tr>
+          <tr><th>補正内容</th><td id="modal-case-correction" style="white-space: pre-wrap; line-height: 1.6; color: var(--color-text);"></td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
 </body>
 </html>
