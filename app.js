@@ -810,10 +810,14 @@ function renderCasesTable() {
     tbody.innerHTML = '<tr><td colspan="7" class="empty-cell">まだ補正事例が登録されていません</td></tr>';
     return;
   }
-  // 行をクリックしたときに viewCaseDetail を呼び出す
-  tbody.innerHTML = cases.map(c => `
+  
+  tbody.innerHTML = cases.map(c => {
+    // 💡 日付に「T」が含まれていれば、そこで分割して前の部分だけ取得
+    const formattedDate = c.date ? c.date.split('T')[0] : '-';
+    
+    return `
     <tr onclick="viewCaseDetail(${c.id})" title="クリックして詳細を表示">
-      <td style="white-space:nowrap">${c.date || '-'}</td>
+      <td style="white-space:nowrap">${formattedDate}</td>
       <td>${c.receipt_number || '-'}</td>
       <td>${c.jurisdiction || '-'}</td>
       <td>${c.registrar || '-'}</td>
@@ -821,7 +825,7 @@ function renderCasesTable() {
       <td>${c.correction ? c.correction.slice(0, 40) + (c.correction.length > 40 ? '…' : '') : ''}</td>
       <td><button class="btn btn-ghost" style="font-size:12px;padding:4px 8px" onclick="event.stopPropagation(); deleteCase(${c.id})">削除</button></td>
     </tr>
-  `).join('');
+  `}).join('');
 }
 
 function viewCaseDetail(caseId) {
@@ -830,7 +834,11 @@ function viewCaseDetail(caseId) {
     showToast('事例データが見つかりません', true);
     return;
   }
-  document.getElementById('modal-case-date').textContent = c.date || '-';
+  
+  // 💡 ポップアップ側でも同様に「T」以降をカット
+  const formattedDate = c.date ? c.date.split('T')[0] : '-';
+
+  document.getElementById('modal-case-date').textContent = formattedDate;
   document.getElementById('modal-case-receipt').textContent = c.receipt_number || '-';
   document.getElementById('modal-case-jurisdiction').textContent = c.jurisdiction || '-';
   document.getElementById('modal-case-registrar').textContent = c.registrar || '-';
